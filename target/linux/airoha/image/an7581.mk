@@ -281,9 +281,9 @@ define Device/znxt_zn504xg-d
   DEVICE_DTS := an7581-znxt-zn504xg-d
   DEVICE_PACKAGES := kmod-gpio-button-hotplug kmod-leds-gpio \
     kmod-phy-airoha-en8811h kmod-airoha-en7572 kmod-airoha-xpon \
-    airoha-ponctl airoha-pond nand-utils ubi-utils \
+    airoha-ponctl airoha-pond airoha-vlanscan nand-utils ubi-utils \
     kmod-sched-bpf kmod-dummy kmod-tun \
-    natmap luci-app-natmap
+    natmap luci-app-natmap luci-app-vlanscan
   DEVICE_PACKAGES += fitblk
 endef
 TARGET_DEVICES += znxt_zn504xg-d
