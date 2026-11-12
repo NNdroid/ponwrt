@@ -313,7 +313,9 @@ proto_pppoe_setup() {
 
 #By 蝈蝈：并发拨号同步的前期准备
 	syncppp_option=""
-	[ "$(uci get syncdial.config.enabled)" -eq "1" ] && {
+	# -q: a build without the syncdial package must not print "Entry not
+	# found"; = "1": an empty answer made -eq fail with "out of range".
+	[ "$(uci -q get syncdial.config.enabled)" = "1" ] && {
 		ppp_if_cnt=$(uci show network | grep -c "\.proto=\'pppoe\'$")
 		syncppp_option="syncppp $ppp_if_cnt"
 		shellsync $ppp_if_cnt 10

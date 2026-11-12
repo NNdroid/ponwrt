@@ -237,6 +237,16 @@
 
 &i2c0 {
 	status = "okay";
+	/*
+	 * The EN7572 is the only device on this bus, and the driver loads 20 KiB
+	 * of MD32 firmware through it on every boot. At the 100 kHz default that
+	 * transfer costs about 4 s of the boot path; Fast Mode (400 kHz) cuts the
+	 * same byte count to roughly 1 s. The slave's Fast Mode timing has not
+	 * been characterised yet, so check "clock 400 kHz" and a clean MD32 probe
+	 * on the first cold boot and drop this property if the image load fails.
+	 * Both ZN504XG-D and ZN515XG-D include this file.
+	 */
+	clock-frequency = <400000>;
 
 	en7572: optical-front-end@50 {
 		compatible = "airoha,en7572";
