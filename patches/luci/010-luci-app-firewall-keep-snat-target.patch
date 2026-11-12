@@ -1,0 +1,25 @@
+luci-app-firewall: keep the "option target 'snat'" line in UCI
+
+The SNAT editor sets o.default = 'SNAT' on the target ListValue but
+leaves rmempty at its default (true). form.js removes any option whose
+value equals the default when rmempty is true, so every "Save & Apply"
+deleted "option target 'snat'" from /etc/config/firewall - and fw4 then
+silently ignored the whole config nat section (its default target is
+masquerade, not snat, and a snat_ip on a non-snat target invalidates the
+section entirely).
+
+Force-keep the option so the default is written to UCI explicitly.
+
+--- a/applications/luci-app-firewall/htdocs/luci-static/resources/view/firewall/snats.js
++++ b/applications/luci-app-firewall/htdocs/luci-static/resources/view/firewall/snats.js
+@@ -287,6 +287,10 @@
+ 		o = s.taboption('general', form.ListValue, 'target', _('Action'));
+ 		o.modalonly = true;
+ 		o.default = 'SNAT';
++		// form.js drops options equal to their default unless rmempty is
++		// false; without this the "option target 'snat'" line is deleted on
++		// every save and fw4 ignores the whole config nat section.
++		o.rmempty = false;
+ 		o.value('SNAT', _('SNAT - Rewrite to specific source IP or port'));
+ 		o.value('MASQUERADE', _('MASQUERADE - Automatically rewrite to outbound interface IP'));
+ 		o.value('ACCEPT', _('ACCEPT - Disable address rewriting'));
