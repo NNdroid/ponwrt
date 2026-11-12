@@ -809,6 +809,35 @@ sub uninstall {
 	return 0;
 }
 
+sub apply_feed_patches($)
+{
+	# Local distribution delta: apply patches from ./patches/<feedname>/
+	# right after a feed is updated, so fork-local fixes (e.g. the
+	# luci-app-firewall SNAT editor patch) survive every "./scripts/feeds
+	# update" without manual intervention. Works on src-git feeds; a patch
+	# that is already applied is detected via a reverse-check and skipped.
+	my $name = shift;
+	my $patchdir = "./patches/$name";
+	my $localpath = "./feeds/$name";
+
+	return unless -d $patchdir;
+
+	for my $patch (glob("$patchdir/*.patch")) {
+		my $apath = abs_path($patch);
+		if (system("git -C '$localpath' apply --check --whitespace=nowarn '$apath'") == 0) {
+			if (system("git -C '$localpath' apply --whitespace=nowarn '$apath'") == 0) {
+				warn "Applying feed patch: $patch\n";
+			} else {
+				warn "WARNING: failed to apply feed patch: $patch\n";
+			}
+		} elsif (system("git -C '$localpath' apply --check --reverse --whitespace=nowarn '$apath'") == 0) {
+			warn "Feed patch already applied, skipping: $patch\n";
+		} else {
+			warn "WARNING: feed patch does not apply (feed not git or source drifted): $patch\n";
+		}
+	}
+}
+
 sub update_feed($$$$$$$)
 {
 	my $type=shift;
@@ -847,6 +876,7 @@ sub update_feed($$$$$$$)
 		warn "failed.\n";
 		return 1;
 	};
+	apply_feed_patches($name);
 	return $rv;
 }
 
