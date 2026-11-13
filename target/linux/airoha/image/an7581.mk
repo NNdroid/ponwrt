@@ -282,8 +282,7 @@ define Device/znxt_zn504xg-d
   DEVICE_PACKAGES := kmod-gpio-button-hotplug kmod-leds-gpio \
     kmod-phy-airoha-en8811h kmod-airoha-en7572 kmod-airoha-xpon \
     airoha-ponctl airoha-pond airoha-vlanscan nand-utils ubi-utils \
-    kmod-sched-bpf kmod-dummy kmod-tun \
-    natmap luci-app-natmap luci-app-vlanscan
+    kmod-sched-bpf kmod-dummy kmod-tun
   DEVICE_PACKAGES += fitblk
 endef
 TARGET_DEVICES += znxt_zn504xg-d
